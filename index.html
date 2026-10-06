@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>УВД по ЦАО по РФО</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0b111b; --bg2:#111a28; --panel:#16202f; --panel2:#1c2839;
+    --line:#26374f; --gold:#d4af37; --gold2:#f0d060;
+    --text:#e8eef7; --muted:#8fa2ba; --ok:#3ecf8e; --err:#ff6b6b; --warn:#f0a020;
+  }
+  body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);
+    min-height:100vh;line-height:1.5;
+    background-image:radial-gradient(circle at 20% 0%,#16233a 0%,transparent 55%),
+                     radial-gradient(circle at 90% 10%,#1a2740 0%,transparent 45%);
+    background-attachment:fixed}
+  a{color:var(--gold);text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;font-size:14px;transition:.18s}
+  input,textarea,select{font-family:inherit;font-size:14px;width:100%;padding:10px 12px;border-radius:8px;
+    background:#0e1725;border:1px solid var(--line);color:var(--text);outline:none}
+  input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.12)}
+
+  header{position:sticky;top:0;z-index:100;background:rgba(11,17,27,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .head-in{max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo-box{width:58px;height:58px;display:grid;place-items:center;flex-shrink:0;filter:drop-shadow(0 0 10px rgba(212,175,55,.45))}
+  .logo-box img{max-width:100%;max-height:100%;object-fit:contain}
+  .brand h1{font-size:17px;letter-spacing:.5px}
+  .brand span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.4px}
+  nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  nav a{color:var(--muted);padding:8px 14px;border-radius:8px;font-size:14px;font-weight:500;transition:.18s}
+  nav a:hover{color:var(--gold);background:#1a2639}
+  nav a.active{color:#0b111b;background:linear-gradient(135deg,var(--gold2),var(--gold));font-weight:600}
+  .auth{display:flex;gap:8px;align-items:center}
+  .btn{padding:9px 16px;font-weight:600}
+  .btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#10161f}
+  .btn-gold:hover{filter:brightness(1.1)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+  .btn-red{background:#3a1a1e;border:1px solid #6b2a2f;color:#ff8b8b}
+  .btn-red:hover{background:#4d2026}
+  .btn-ok{background:#123a2a;border:1px solid #1f6b4a;color:#7ce0b4}
+  .btn-warn{background:#3a2a10;border:1px solid #6b4a1f;color:#f0c060}
+  .btn-warn:hover{background:#4d3818}
+  .btn-sm{padding:6px 12px;font-size:13px}
+  .gear{padding:8px 11px;font-size:16px;line-height:1}
+
+  main{max-width:1280px;margin:0 auto;padding:34px 20px 80px}
+  section{margin-bottom:60px;scroll-margin-top:100px}
+  .sec-title{font-size:24px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+  .sec-title::before{content:'';width:5px;height:26px;border-radius:3px;background:linear-gradient(var(--gold2),var(--gold))}
+  .sec-sub{color:var(--muted);font-size:14px;margin-bottom:24px;padding-left:17px}
+
+  .hero{text-align:center;padding:44px 24px;border-radius:18px;margin-bottom:56px;
+    background:linear-gradient(150deg,#16233a,#0e1725 60%);border:1px solid var(--line);
+    position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 120%,rgba(212,175,55,.16),transparent 60%);pointer-events:none}
+  .hero-logo{width:130px;height:130px;margin:0 auto 18px;display:grid;place-items:center;filter:drop-shadow(0 0 22px rgba(212,175,55,.5))}
+  .hero-logo img{max-width:100%;max-height:100%;object-fit:contain}
+  .hero h2{font-size:34px;margin-bottom:10px;letter-spacing:.5px}
+  .hero h2 span{color:var(--gold)}
+  .hero p{color:var(--muted);max-width:620px;margin:0 auto 22px}
+  .stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-top:26px}
+  .stat b{display:block;font-size:26px;color:var(--gold)}
+  .stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+  .dept-block{margin-bottom:26px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
+  .dept-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-weight:700;font-size:16px;letter-spacing:.5px;color:#0b111b}
+  .dept-head .dept-count{font-size:12px;font-weight:600;opacity:.75;letter-spacing:1px}
+  .staff-row{display:grid;grid-template-columns:1.6fr 1.3fr 1.6fr 1fr 1fr auto;gap:14px;align-items:center;
+    padding:12px 20px;border-top:1px solid var(--line);font-size:14px;transition:.15s}
+  .staff-row:hover{background:var(--bg2)}
+  .staff-row .rnk{color:var(--gold);font-size:12.5px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+  .staff-row .nm{font-weight:600}
+  .staff-row .pos{color:var(--muted)}
+  .staff-row .dc{color:var(--muted);font-size:13px}
+  .staff-row.vacation .nm,.staff-row.vacation .rnk{opacity:.55}
+  .status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;
+    text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+  .status-active{background:#123a2a;color:#7ce0b4}
+  .status-vacation{background:#3a2a10;color:#f0c060}
+  .staff-head-row{display:grid;grid-template-columns:1.6fr 1.3fr 1.6fr 1fr 1fr auto;gap:14px;
+    padding:10px 20px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;
+    background:var(--bg2);border-top:1px solid var(--line)}
+
+  .lock-box{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:52px 20px;text-align:center}
+  .lock-box .ico{font-size:44px;margin-bottom:12px}
+  .lock-box h3{margin-bottom:8px}
+  .lock-box p{color:var(--muted);font-size:14px;margin-bottom:20px}
+  .materials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+  .mat-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.2s}
+  .mat-card:hover{border-color:var(--gold)}
+  .mat-media{width:100%;aspect-ratio:16/10;background:#0a121d;object-fit:cover;display:block;border:none}
+  .mat-body{padding:15px 16px}
+  .mat-body h4{font-size:16px;margin-bottom:6px}
+  .mat-body p{font-size:13px;color:var(--muted);margin-bottom:10px}
+  .mat-meta{font-size:11px;color:#5f728c;display:flex;justify-content:space-between;align-items:center}
+  .badge{background:#1d2c42;color:var(--gold);padding:2px 9px;border-radius:20px;font-size:10px;text-transform:uppercase;letter-spacing:.8px}
+
+  .form-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;max-width:820px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500}
+  .field label .req{color:var(--err)}
+  textarea{resize:vertical;min-height:110px}
+  .check{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);margin-bottom:18px}
+  .check input{width:auto;margin-top:3px}
+  .form-note{font-size:12px;color:var(--muted);margin-top:14px}
+  .warn-box{background:#2a1e0e;border:1px solid #5a4419;border-radius:10px;padding:14px 16px;
+    font-size:13px;color:#f0d060;margin-bottom:22px}
+
+  .admin-panel{background:var(--panel);border:1px solid var(--gold);border-radius:16px;padding:24px;margin-top:26px}
+  .admin-panel h4{font-size:14px;color:var(--gold);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+  .admin-panel hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  .admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+  .dept-edit-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;
+    padding:8px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--bg2)}
+  .color-swatch{width:44px;height:36px;border-radius:8px;border:1px solid var(--line);cursor:pointer;padding:0}
+  .color-swatch::-webkit-color-swatch-wrapper{padding:2px}
+  .color-swatch::-webkit-color-swatch{border:none;border-radius:6px}
+
+  .staff-edit-card{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;background:var(--bg2)}
+  .staff-edit-card .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+  .staff-edit-card .row2{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+  .staff-edit-card .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+
+  .overlay{position:fixed;inset:0;background:rgba(5,9,15,.82);backdrop-filter:blur(4px);
+    display:none;place-items:center;z-index:200;padding:20px}
+  .overlay.open{display:grid}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;
+    width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.7)}
+  .modal h3{margin-bottom:6px;font-size:19px}
+  .modal .hint{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .modal-actions{display:flex;gap:10px;margin-top:18px}
+  .modal-actions .btn{flex:1;text-align:center;padding:11px}
+
+  #toast{position:fixed;bottom:26px;right:26px;z-index:300;display:flex;flex-direction:column;gap:10px}
+  .toast{background:var(--panel2);border-left:4px solid var(--gold);border-radius:10px;padding:14px 18px;
+    font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.5);animation:slide .3s ease;max-width:340px}
+  .toast.ok{border-left-color:var(--ok)}
+  .toast.err{border-left-color:var(--err)}
+  @keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+  .empty{color:var(--muted);font-size:14px;font-style:italic;padding:16px 0}
+  footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;color:var(--muted);font-size:13px;background:#080d15}
+  .hidden{display:none !important}
+
+  @media(max-width:960px){
+    nav{order:3;width:100%;margin-left:0;justify-content:center}
+    .head-in{justify-content:center}
+    .auth{order:2}
+    .hero h2{font-size:26px}
+    .grid2,.grid3{grid-template-columns:1fr}
+    .staff-row,.staff-head-row{grid-template-columns:1fr;gap:6px;padding:14px}
+    .staff-head-row{display:none}
+    .staff-edit-card .row,.staff-edit-card .row2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-in">
+    <div class="brand">
+      <div class="logo-box">
+        <img src="logo.png" alt="Эмблема УВД"
+             onerror="this.style.display='none';this.parentNode.innerHTML='<div style=&quot;font-size:42px;color:#d4af37&quot;>★</div>';">
+      </div>
+      <div>
+        <h1>УВД по ЦАО</h1>
+        <span>по Рублевскому ФО</span>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#home" class="nav-link active">Главная</a>
+      <a href="#leaders" class="nav-link">Состав</a>
+      <a href="#materials" class="nav-link">Метод. материалы</a>
+      <a href="#apply" class="nav-link">Заявление о преступлении</a>
+    </nav>
+
+    <div class="auth">
+      <span id="dbStatus" style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px"></span>
+      <button class="btn btn-ghost" id="staffBtn" type="button" onclick="openStaffLogin()">Войти как сотрудник</button>
+      <button class="btn btn-ghost gear" id="adminBtn" type="button" onclick="adminBtnClick()" title="Панель администратора">⚙</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section id="home">
+    <div class="hero">
+      <div class="hero-logo">
+        <img src="logo.png" alt="Эмблема УВД"
+             onerror="this.style.display='none';this.parentNode.innerHTML='<div style=&quot;font-size:110px;color:#d4af37&quot;>★</div>';">
+      </div>
+      <h2>Управление внутренних дел<br><span>по Центральному АО</span></h2>
+      <p>Официальный портал УВД по ЦАО по Рублевскому федеральному округу. Руководящий состав, подразделения, методические материалы и приём заявлений о преступлениях.</p>
+      <div class="stats">
+        <div class="stat"><b id="statStaff">0</b><span>Сотрудников</span></div>
+        <div class="stat"><b id="statDepts">0</b><span>Отделов</span></div>
+        <div class="stat"><b id="statMaterials">0</b><span>Материалов</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="leaders">
+    <h2 class="sec-title">Личный состав</h2>
+    <p class="sec-sub">Сотрудники УВД по ЦАО по РФО по подразделениям</p>
+    <div id="staffContainer"></div>
+    <div id="adminPanelHost"></div>
+  </section>
+
+  <section id="materials">
+    <h2 class="sec-title">Методические материалы</h2>
+    <p class="sec-sub">Доступно только для сотрудников и кадетов УВД</p>
+
+    <div id="materialsLock" class="lock-box">
+      <div class="ico">🔒</div>
+      <h3>Материалы закрыты</h3>
+      <p>Раздел доступен только сотрудникам УВД по ЦАО по РФО.<br>Войдите, используя общий пароль подразделения.</p>
+      <button class="btn btn-gold" type="button" onclick="openStaffLogin()">Войти как сотрудник</button>
+    </div>
+
+    <div id="materialsContent" class="hidden">
+      <div id="adminMaterialForm" class="admin-panel hidden">
+        <h4>➕ Добавить материал</h4>
+        <div class="grid2">
+          <div class="field"><label>Название</label><input id="matTitle" placeholder="Например: Устав УВД"></div>
+          <div class="field"><label>Тип</label>
+            <select id="matType">
+              <option value="image">Фото</option>
+              <option value="video">Видео</option>
+              <option value="link">Ссылка</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Описание</label><input id="matDesc" placeholder="Краткое описание"></div>
+        <div class="field"><label>Ссылка (URL) на файл / YouTube</label><input id="matUrl" placeholder="https://..."></div>
+        <div class="field"><label>…или загрузить файл (до 2.5 МБ)</label><input type="file" id="matFile" accept="image/*,video/*"></div>
+        <button class="btn btn-gold" type="button" onclick="addMaterial()">Добавить материал</button>
+      </div>
+      <div class="materials-grid" id="materialsGrid"></div>
+    </div>
+  </section>
+
+  <section id="apply">
+    <h2 class="sec-title">Заявление о преступлении</h2>
+    <p class="sec-sub">Заполните форму — заявление будет передано в дежурную часть УВД по ЦАО по РФО</p>
+
+    <div class="form-card">
+      <div class="warn-box">
+        ⚠️ <b>Внимание:</b> заведомо ложный донос влечёт уголовную ответственность по ст. 306 УК РФ.
+      </div>
+
+      <form id="applyForm">
+        <div class="grid2">
+          <div class="field"><label>ФИО заявителя <span class="req">*</span></label>
+            <input name="fio" required></div>
+          <div class="field"><label>Дата рождения <span class="req">*</span></label>
+            <input name="birth" required placeholder="дд.мм.гггг"></div>
+          <div class="field"><label>Discord <span class="req">*</span></label>
+            <input name="discord" required></div>
+          <div class="field"><label>Static ID <span class="req">*</span></label>
+            <input name="static" required></div>
+          <div class="field"><label>Телефон</label>
+            <input name="phone"></div>
+          <div class="field"><label>Дата происшествия <span class="req">*</span></label>
+            <input name="date" required placeholder="дд.мм.гггг чч:мм"></div>
+        </div>
+
+        <div class="field"><label>Место происшествия <span class="req">*</span></label>
+          <input name="place" required></div>
+
+        <div class="field"><label>Категория <span class="req">*</span></label>
+          <select name="category" required>
+            <option value="">— выберите —</option>
+            <option>Кража / грабёж</option>
+            <option>Разбой / вооружённое нападение</option>
+            <option>Убийство / тяжкие телесные повреждения</option>
+            <option>Мошенничество</option>
+            <option>Угон транспорта</option>
+            <option>Незаконный оборот оружия/наркотиков</option>
+            <option>Хулиганство</option>
+            <option>Коррупция / превышение полномочий</option>
+            <option>Иное</option>
+          </select>
+        </div>
+
+        <div class="field"><label>Обстоятельства <span class="req">*</span></label>
+          <textarea name="about" required></textarea></div>
+
+        <div class="field"><label>Подозреваемые</label>
+          <textarea name="suspects"></textarea></div>
+
+        <div class="field"><label>Свидетели</label>
+          <input name="witnesses"></div>
+
+        <div class="field"><label>Ссылки на доказательства</label>
+          <textarea name="evidence"></textarea></div>
+
+        <label class="check">
+          <input type="checkbox" name="agree" required>
+          <span>Подтверждаю достоверность сведений и осведомлён(а) об ответственности по ст. 306 УК РФ.</span>
+        </label>
+
+        <button type="submit" class="btn btn-gold" style="padding:12px 32px" id="submitBtn">Отправить заявление</button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  © <span id="year"></span> УВД по ЦАО по Рублевскому федеральному округу.
+</footer>
+
+<div class="overlay" id="staffModal">
+  <div class="modal">
+    <h3>🔐 Вход для сотрудников</h3>
+    <p class="hint">Общий пароль подразделения</p>
+    <div class="field"><input type="password" id="staffPass" autocomplete="off"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" onclick="closeModal('staffModal')">Отмена</button>
+      <button class="btn btn-gold" type="button" onclick="staffLogin()">Войти</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="adminModal">
+  <div class="modal">
+    <h3>⚙️ Панель администратора</h3>
+    <p class="hint">Доступ только для лидера подразделения</p>
+    <div class="field"><input type="password" id="adminPass" autocomplete="off"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" onclick="closeModal('adminModal')">Отмена</button>
+      <button class="btn btn-gold" type="button" onclick="adminLogin()">Войти</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="vacationModal">
+  <div class="modal">
+    <h3>🏖 Отпуск</h3>
+    <p class="hint">Дата окончания отпуска</p>
+    <div class="field"><input type="date" id="vacationDate"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" onclick="closeModal('vacationModal')">Отмена</button>
+      <button class="btn btn-gold" type="button" onclick="confirmVacation()">Подтвердить</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ============================================================
+     ОСНОВНОЙ СКРИПТ (НЕ МОДУЛЬ — функции сразу глобальные)
+     ============================================================ -->
+<script>
+/* ============ КОНФИГ FIREBASE ============ */
+var firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+
+/* ============ КОНСТАНТЫ ============ */
+var DEFAULT_ADMIN_PASS = 'uvd_admin_2024';
+var DEFAULT_STAFF_PASS = 'kadet2024';
+
+var RANKS = [
+  'Генерал-майор','Полковник','Подполковник','Майор','Капитан',
+  'Старший лейтенант','Лейтенант','Младший лейтенант',
+  'Прапорщик','Старшина','Сержант','Рядовой'
+];
+
+var RANK_TO_POSITION = {
+  'Генерал-майор': 'Начальник УВД',
+  'Полковник':     'Заместитель начальника УВД',
+  'Подполковник':  'Начальник подразделения',
+  'Майор':         'Заместитель начальника подразделения'
+};
+
+var POSITIONS = [
+  'Начальник УВД','Заместитель начальника УВД',
+  'Начальник подразделения','Заместитель начальника подразделения',
+  'Старший офицер','Офицер','Младший офицер','Курсант','Кадет'
+];
+
+var DEFAULT_DEPARTMENTS = [
+  { id: 'uvd',   name: 'Руководство УВД',                    color: '#d4af37', order: 0 },
+  { id: 'ooup',  name: 'ООУП — Отдел охраны общественного порядка', color: '#4a90d9', order: 1 },
+  { id: 'gai',   name: 'ОГИБДД — Отдел ГИБДД',                color: '#e05a3a', order: 2 },
+  { id: 'ur',    name: 'УР — Уголовный розыск',               color: '#8b5cf6', order: 3 },
+  { id: 'sobr',  name: 'СОБР — Специальный отряд',            color: '#16a34a', order: 4 }
+];
+
+var DEFAULT_STAFF = [
+  { id: 's1', name: 'Иванов И. И.',   rank: 'Генерал-майор', position: 'Начальник УВД',                       department: 'uvd',  discord: '', static: '', status: 'active', vacationUntil: '' },
+  { id: 's2', name: 'Петров П. П.',   rank: 'Полковник',     position: 'Заместитель начальника УВД',          department: 'uvd',  discord: '', static: '', status: 'active', vacationUntil: '' },
+  { id: 's3', name: 'Сидоров С. С.',  rank: 'Подполковник',  position: 'Начальник подразделения',             department: 'ooup', discord: '', static: '', status: 'active', vacationUntil: '' },
+  { id: 's4', name: 'Кузнецов А. В.', rank: 'Майор',         position: 'Заместитель начальника подразделения', department: 'gai',  discord: '', static: '', status: 'active', vacationUntil: '' }
+];
+
+/* ============ ГЛОБАЛЬНОЕ СОСТОЯНИЕ ============ */
+var USE_FIREBASE = false;
+var fb = null;
+var staff = [];
+var departments = [];
+var materials = [];
+var apps = [];
+var webhookUrl = '';
+var adminPass = DEFAULT_ADMIN_PASS;
+var staffPass = DEFAULT_STAFF_PASS;
+var isStaff = false;
+var isAdmin = false;
+var pendingVacationId = null;
+
+/* ============ ХРАНИЛИЩЕ ============ */
+var Store = (function(){
+  var mem = {};
+  var hasLS = false;
+  try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); hasLS = true; } catch(e){}
+
+  return {
+    lsGet: function(k, def){
+      if (!hasLS) return (k in mem) ? mem[k] : def;
+      try { var v = localStorage.getItem(k); return v === null ? def : JSON.parse(v); }
+      catch(e){ return def; }
+    },
+    lsSet: function(k, v){
+      mem[k] = v;
+      if (hasLS){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+    },
+    ssGet: function(k){ try { return sessionStorage.getItem(k); } catch(e){ return mem['s_'+k] || null; } },
+    ssSet: function(k, v){ mem['s_'+k] = v; try { sessionStorage.setItem(k, v); } catch(e){} },
+    ssDel: function(k){ delete mem['s_'+k]; try { sessionStorage.removeItem(k); } catch(e){} }
+  };
+})();
+
+/* ============ УТИЛИТЫ ============ */
+function $(id){ return document.getElementById(id); }
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function uid(){ return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function toast(msg, type){
+  console.log('[UVD] toast:', msg, type || '');
+  var box = $('toast'); if (!box) return;
+  var t = document.createElement('div');
+  t.className = 'toast ' + (type || '');
+  t.textContent = msg;
+  box.appendChild(t);
+  setTimeout(function(){
+    t.style.opacity = '0'; t.style.transform = 'translateX(40px)'; t.style.transition = '.3s';
+    setTimeout(function(){ t.remove(); }, 300);
+  }, 4200);
+}
+function openModal(id){ $(id).classList.add('open'); }
+function closeModal(id){ $(id).classList.remove('open'); }
+
+function statusPill(s){
+  if (s === 'vacation') return '<span class="status-pill status-vacation">В отпуске</span>';
+  return '<span class="status-pill status-active">На службе</span>';
+}
+
+function shade(hex, pct){
+  var h = hex.replace('#',''); if (h.length === 3) h = h.split('').map(function(c){return c+c;}).join('');
+  var num = parseInt(h, 16);
+  var r = (num >> 16) & 0xff, g = (num >> 8) & 0xff, b = num & 0xff;
+  var f = pct / 100;
+  var adj = function(v){ return Math.max(0, Math.min(255, Math.round(v + 255 * f))); };
+  return '#' + [adj(r), adj(g), adj(b)].map(function(v){ return v.toString(16).padStart(2,'0'); }).join('');
+}
+
+/* ============ ГЛАВНЫЙ ЛОГ ============ */
+function logStart(){
+  console.log('%c[UVD] Сайт инициализируется', 'color:#d4af37;font-weight:bold');
+  console.log('[UVD] Режим:', USE_FIREBASE ? 'Firebase' : 'localStorage');
+  console.log('[UVD] Функции зарегистрированы. Проверь: typeof deleteStaff =', typeof deleteStaff);
+}
+
+/* ============================================================
+   РЕНДЕР: ЛИЧНЫЙ СОСТАВ
+   ============================================================ */
+function renderStaff(){
+  var c = $('staffContainer'); if (!c) return;
+  console.log('[UVD] renderStaff(): сотрудников', staff.length, ', отделов', departments.length);
+
+  if (!staff.length){
+    c.innerHTML = '<p class="empty">Состав пока не заполнен.</p>';
+    return;
+  }
+
+  var byDept = {};
+  staff.forEach(function(s){
+    var d = s.department || 'uvd';
+    if (!byDept[d]) byDept[d] = [];
+    byDept[d].push(s);
+  });
+
+  var depts = departments.length ? departments : DEFAULT_DEPARTMENTS;
+  var orderedDepts = depts.slice().sort(function(a,b){ return (a.order||0) - (b.order||0); });
+  var rankIdx = function(r){ var i = RANKS.indexOf(r); return i === -1 ? 999 : i; };
+
+  var html = '';
+  orderedDepts.forEach(function(d){
+    var list = (byDept[d.id] || []).slice().sort(function(a,b){
+      return rankIdx(a.rank) - rankIdx(b.rank) || (a.name||'').localeCompare(b.name||'');
+    });
+    if (!list.length && !isAdmin) return;
+
+    html += '<div class="dept-block">' +
+      '<div class="dept-head" style="background:linear-gradient(90deg,' + (d.color||'#d4af37') + ',' + shade(d.color||'#d4af37',-30) + ')">' +
+        '<span>' + esc(d.name) + '</span>' +
+        '<span class="dept-count">' + list.length + ' чел.</span>' +
+      '</div>';
+
+    if (!list.length){
+      html += '<div style="padding:16px 20px;color:var(--muted);font-size:14px;font-style:italic">В этом отделе пока никого нет.</div>';
+    } else {
+      html += '<div class="staff-head-row"><div>ФИО</div><div>Звание</div><div>Должность</div><div>Discord</div><div>Статус</div><div>Действие</div></div>';
+      list.forEach(function(s){
+        html += '<div class="staff-row ' + (s.status === 'vacation' ? 'vacation' : '') + '">' +
+          '<div class="nm">' + esc(s.name) + '</div>' +
+          '<div class="rnk">' + esc(s.rank || '') + '</div>' +
+          '<div class="pos">' + esc(s.position || '') + '</div>' +
+          '<div class="dc">' + (s.discord ? esc(s.discord) : '—') + '</div>' +
+          '<div>' + statusPill(s.status) +
+            (s.status === 'vacation' && s.vacationUntil ? '<div style="font-size:11px;color:var(--muted);margin-top:3px">до ' + esc(s.vacationUntil) + '</div>' : '') +
+          '</div>' +
+          '<div>' + (isAdmin ?
+            '<button class="btn btn-warn btn-sm" type="button" onclick="toggleVacation(\'' + s.id + '\')">' + (s.status === 'vacation' ? 'Вернуть' : 'Отпуск') + '</button> ' +
+            '<button class="btn btn-red btn-sm" type="button" onclick="deleteStaff(\'' + s.id + '\')">Удалить</button>'
+            : '—') + '</div>' +
+        '</div>';
+      });
+    }
+    html += '</div>';
+  });
+
+  // сотрудники без отдела
+  var known = {}; orderedDepts.forEach(function(d){ known[d.id] = true; });
+  var orphans = staff.filter(function(s){ return !known[s.department]; });
+  if (orphans.length){
+    html += '<div class="dept-block">' +
+      '<div class="dept-head" style="background:linear-gradient(90deg,#555,#333)">' +
+        '<span>Без отдела</span><span class="dept-count">' + orphans.length + ' чел.</span>' +
+      '</div>' +
+      '<div class="staff-head-row"><div>ФИО</div><div>Звание</div><div>Должность</div><div>Discord</div><div>Статус</div><div>Действие</div></div>';
+    orphans.forEach(function(s){
+      html += '<div class="staff-row ' + (s.status === 'vacation' ? 'vacation' : '') + '">' +
+        '<div class="nm">' + esc(s.name) + '</div>' +
+        '<div class="rnk">' + esc(s.rank||'') + '</div>' +
+        '<div class="pos">' + esc(s.position||'') + '</div>' +
+        '<div class="dc">' + (s.discord ? esc(s.discord) : '—') + '</div>' +
+        '<div>' + statusPill(s.status) + '</div>' +
+        '<div>' + (isAdmin ?
+          '<button class="btn btn-warn btn-sm" type="button" onclick="toggleVacation(\'' + s.id + '\')">' + (s.status === 'vacation' ? 'Вернуть' : 'Отпуск') + '</button> ' +
+          '<button class="btn btn-red btn-sm" type="button" onclick="deleteStaff(\'' + s.id + '\')">Удалить</button>'
+          : '—') + '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+  }
+
+  c.innerHTML = html;
+}
+
+function updateStats(){
+  if ($('statStaff'))      $('statStaff').textContent = staff.length;
+  if ($('statDepts'))      $('statDepts').textContent = (departments.length || DEFAULT_DEPARTMENTS.length);
+  if ($('statMaterials'))  $('statMaterials').textContent = materials.length;
+}
+
+/* ============================================================
+   ГЛОБАЛЬНЫЕ ФУНКЦИИ: УДАЛИТЬ / ОТПУСК
+   ============================================================ */
+window.deleteStaff = async function(id){
+  console.log('%c[UVD] deleteStaff вызван, id=' + id, 'color:#f06b6b');
+  try {
+    var s = staff.filter(function(x){ return x.id === id; })[0];
+    if (!s){ toast('Сотрудник не найден', 'err'); console.warn('[UVD] Не найден в массиве staff. Всего:', staff.length); return; }
+    if (!confirm('Удалить сотрудника "' + s.name + '"?')) { console.log('[UVD] Отменено пользователем'); return; }
+
+    if (USE_FIREBASE && fb){
+      console.log('[UVD] Firestore delete...');
+      await fb.deleteDoc(fb.doc(fb.db, 'staff', id));
+      console.log('[UVD] Firestore delete OK');
+    } else {
+      console.log('[UVD] localStorage delete...');
+      var arr = Store.lsGet('uvd_staff_list', DEFAULT_STAFF).filter(function(x){ return x.id !== id; });
+      Store.lsSet('uvd_staff_list', arr);
+      staff = arr;
+      renderStaff();
+      renderAdminPanel();
+    }
+    toast('Сотрудник удалён', 'ok');
+  } catch(e){
+    console.error('[UVD] Ошибка удаления:', e);
+    toast('Ошибка: ' + (e.message || e), 'err');
+  }
+};
+
+window.toggleVacation = async function(id){
+  console.log('[UVD] toggleVacation id=' + id);
+  try {
+    var s = staff.filter(function(x){ return x.id === id; })[0];
+    if (!s){ toast('Сотрудник не найден', 'err'); return; }
+
+    if (s.status === 'vacation'){
+      if (USE_FIREBASE && fb){
+        await fb.updateDoc(fb.doc(fb.db, 'staff', id), { status: 'active', vacationUntil: '' });
+      } else {
+        var arr = Store.lsGet('uvd_staff_list', DEFAULT_STAFF).map(function(x){
+          return x.id === id ? Object.assign({}, x, { status: 'active', vacationUntil: '' }) : x;
+        });
+        Store.lsSet('uvd_staff_list', arr);
+        staff = arr;
+        renderStaff();
+        renderAdminPanel();
+      }
+      toast('Сотрудник вернулся из отпуска', 'ok');
+      return;
+    }
+
+    pendingVacationId = id;
+    var d = new Date(); d.setDate(d.getDate() + 14);
+    var inp = $('vacationDate');
+    if (inp) inp.value = d.toISOString().slice(0,10);
+    openModal('vacationModal');
+  } catch(e){
+    console.error('[UVD] Ошибка отпуска:', e);
+    toast('Ошибка: ' + (e.message || e), 'err');
+  }
+};
+
+window.confirmVacation = async function(){
+  if (!pendingVacationId){ closeModal('vacationModal'); return; }
+  var date = ($('vacationDate').value || '');
+  var id = pendingVacationId;
+  pendingVacationId = null;
+  try {
+    if (USE_FIREBASE && fb){
+      await fb.updateDoc(fb.doc(fb.db, 'staff', id), { status: 'vacation', vacationUntil: date });
+    } else {
+      var arr = Store.lsGet('uvd_staff_list', DEFAULT_STAFF).map(function(x){
+        return x.id === id ? Object.assign({}, x, { status: 'vacation', vacationUntil: date }) : x;
+      });
+      Store.lsSet('uvd_staff_list', arr);
+      staff = arr;
+      renderStaff();
+      renderAdminPanel();
+    }
+    closeModal('vacationModal');
+    toast('Сотрудник отправлен в отпуск', 'ok');
+  } catch(e){
+    console.error('[UVD] Ошибка:', e);
+    toast('Ошибка: ' + (e.message || e), 'err');
+  }
+};
+
+window.updateStaffField = async function(id, key, val){
+  console.log('[UVD] updateStaffField', id, key, val);
+  try {
+    if (USE_FIREBASE && fb){
+      var patch = {}; patch[key] = val;
+      await fb.updateDoc(fb.doc(fb.db, 'staff', id), patch);
+    } else {
+      var arr = Store.lsGet('uvd_staff_list', DEFAULT_STAFF).map(function(x){
+        if (x.id !== id) return x;
+        var c = Object.assign({}, x); c[key] = val; return c;
+      });
+      Store.lsSet('uvd_staff_list', arr);
+      staff = arr;
+      renderStaff();
+    }
+  } catch(e){
+    console.error('[UVD]', e);
+    toast('Ошибка: ' + (e.message || e), 'err');
+  }
+};
+
+window.addStaffFromAdmin = async function(){
+  var name = $('ns_name').value.trim();
+  var rank = $('ns_rank').value;
+  var position = $('ns_pos').value;
+  var department = $('ns_dept').value;
+  var discord = $('ns_discord').value.trim();
+  var staticId = $('ns_static').value.trim();
+
+  if (!name){ toast('Укажите ФИО', 'err'); return; }
+  if (!rank){ toast('Укажите звание', 'err'); return; }
+
+  var obj = {
+    name: name, rank: rank, position: position, department: department,
+    discord: discord, static: staticId,
+    status: 'active', vacationUntil: '',
+    createdAt: Date.now(), order: staff.length
+  };
+
+  try {
+    if (USE_FIREBASE && fb){
+      await fb.addDoc(fb.collection(fb.db, 'staff'), obj);
+    } else {
+      var arr = Store.lsGet('uvd_staff_list', DEFAULT_STAFF).slice();
+      arr.push(Object.assign({ id: uid() }, obj));
+      Store.lsSet('uvd_staff_list', arr);
+      staff = arr;
+      renderStaff();
+      renderAdminPanel();
+    }
+    $('ns_name').value = ''; $('ns_discord').value = ''; $('ns_static').value = '';
+    toast('Сотрудник добавлен', 'ok');
+  } catch(e){
+    console.error('[UVD]', e);
+    toast('Ошибка: ' + (e.message || e), 'err');
+  }
+};
+
+window.autoPosition = function(rank){
+  var pos = RANK_TO_POSITION[rank];
+  if (pos && $('ns_pos')) $('ns_pos').value = pos;
+};
+
+/* ============================================================
+   ОТДЕЛЫ
+   ============================================================ */
+window.addDepartment = async function(){
+  var name = $('dept_name').value.trim();
+  var color = $('dept_color').value || '#d4af37';
+  if (!name){ toast('Введите название', 'err'); return; }
+  var obj = { name: name, color: color, order: departments.length, createdAt: Date.now() };
+  try {
+    if (USE_FIREBASE && fb){
+      await fb.addDoc(fb.collection(fb.db, 'departments'), obj);
+    } else {
+      var arr = Store.lsGet('uvd_departments', DEFAULT_DEPARTMENTS).slice();
+      arr.push(Object.assign({ id: uid() }, obj));
+      Store.lsSet('uvd_departments', arr);
+      departments = arr;
+      renderStaff(); renderAdminPanel();
+    }
+    $('dept_name').value = '';
+    toast('Отдел добавлен', 'ok');
+  } catch(e){ console.error(e); toast('Ошибка: ' + (e.message||e), 'err'); }
+};
+
+window.deleteDepartment = async function(id){
+  var d = departments.filter(function(x){ return x.id === id; })[0];
+  if (!d) return;
+  var inUse = staff.filter(function(s){ return s.department === id; }).length;
+  if (!confirm('Удалить отдел "' + d.name + '"?' + (inUse ? ' В нём ' + inUse + ' чел.' : ''))) return;
+  try {
+    if (USE_FIREBASE && fb){
+      await fb.deleteDoc(fb.doc(fb.db, 'departments', id));
+    } else {
+      var arr = Store.lsGet('uvd_departments', DEFAULT_DEPARTMENTS).filter(function(x){ return x.id !== id; });
+      Store.lsSet('uvd_departments', arr);
+      departments = arr;
+      renderStaff(); renderAdminPanel();
+    }
+    toast('Отдел удалён', 'ok');
+  } catch(e){ console.error(e); toast('Ошибка: ' + (e.message||e), 'err'); }
+};
+
+window.updateDepartmentField = async function(id, key, val){
+  try {
+    if (USE_FIREBASE && fb){
+      var patch = {}; patch[key] = val;
+      await fb.updateDoc(fb.doc(fb.db, 'departments', id), patch);
+    } else {
+      var arr = Store.lsGet('uvd_departments', DEFAULT_DEPARTMENTS).map(function(x){
+        if (x.id !== id) return x;
+        var c = Object.assign({}, x); c[key] = val; return c;
+      });
+      Store.lsSet('uvd_departments', arr);
+      departments = arr;
+      renderStaff();
+    }
+  } catch(e){ console.error(e); toast('Ошибка: ' + (e.message||e), 'err'); }
+};
+
+/* ============================================================
+   АДМИН-ПАНЕЛЬ
+   ============================================================ */
+function renderAdminPanel(){
+  var host = $('adminPanelHost'); if (!host) return;
+  if (!isAdmin){ host.innerHTML = ''; return; }
+
+  var depts = departments.length ? departments : DEFAULT_DEPARTMENTS;
+  var rankOpts = RANKS.map(function(r){ return '<option value="' + esc(r) + '">' + esc(r) + '</option>'; }).join('');
+  var posOpts  = POSITIONS.map(function(p){ return '<option value="' + esc(p) + '">' + esc(p) + '</option>'; }).join('');
+  var deptOpts = depts.map(function(d){ return '<option value="' + esc(d.id) + '">' + esc(d.name) + '</option>'; }).join('');
+
+  host.innerHTML =
+    '<div class="admin-panel">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px">' +
+        '<h3 style="font-size:18px">⚙️ Панель администратора</h3>' +
+        '<div style="display:flex;gap:8px;align-items:center">' +
+          '<span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">' +
+            (USE_FIREBASE ? '🔥 Firebase' : '💾 localStorage') +
+          '</span>' +
+          '<button class="btn btn-red btn-sm" type="button" onclick="adminLogout()">Выйти</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<h4>➕ Добавить сотрудника</h4>' +
+      '<div class="grid3">' +
+        '<div class="field"><label>ФИО</label><input id="ns_name" placeholder="Иванов И. И."></div>' +
+        '<div class="field"><label>Звание</label><select id="ns_rank" onchange="autoPosition(this.value)"><option value="">— выберите —</option>' + rankOpts + '</select></div>' +
+        '<div class="field"><label>Должность</label><select id="ns_pos"><option value="">— выберите —</option>' + posOpts + '</select></div>' +
+      '</div>' +
+      '<div class="grid3">' +
+        '<div class="field"><label>Отдел</label><select id="ns_dept">' + deptOpts + '</select></div>' +
+        '<div class="field"><label>Discord</label><input id="ns_discord" placeholder="username"></div>' +
+        '<div class="field"><label>Static ID</label><input id="ns_static" placeholder="12345"></div>' +
+      '</div>' +
+      '<button class="btn btn-gold" type="button" onclick="addStaffFromAdmin()">Добавить сотрудника</button>' +
+
+      '<hr>' +
+
+      '<h4>🏛 Отделы и цвета</h4>' +
+      '<div id="deptListHost"></div>' +
+      '<div class="dept-edit-row" style="background:transparent;border-style:dashed">' +
+        '<input type="color" class="color-swatch" id="dept_color" value="#d4af37">' +
+        '<input id="dept_name" placeholder="Название нового отдела">' +
+        '<button class="btn btn-gold btn-sm" type="button" onclick="addDepartment()">+ Добавить</button>' +
+        '<div></div>' +
+      '</div>' +
+
+      '<hr>' +
+
+      '<h4>✏️ Редактировать сотрудников</h4>' +
+      '<div id="staffEditHost"></div>' +
+
+      '<hr>' +
+
+      '<h4>Discord Webhook</h4>' +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+        '<input id="webhookInput" placeholder="https://discord.com/api/webhooks/..." style="flex:1;min-width:260px" value="' + esc(webhookUrl) + '">' +
+        '<button class="btn btn-gold btn-sm" type="button" onclick="saveWebhook()">Сохранить</button>' +
+        '<button class="btn btn-ghost btn-sm" type="button" onclick="testWebhook()">Проверить</button>' +
+      '</div>' +
+
+      '<hr>' +
+
+      '<h4>🔑 Пароли</h4>' +
+      '<div class="grid2">' +
+        '<div class="field"><label>Пароль администратора</label>' +
+          '<div style="display:flex;gap:8px"><input id="newAdminPass"><button class="btn btn-ghost btn-sm" type="button" onclick="changePass(\'admin\')">OK</button></div>' +
+        '</div>' +
+        '<div class="field"><label>Общий пароль сотрудников</label>' +
+          '<div style="display:flex;gap:8px"><input id="newStaffPass"><button class="btn btn-ghost btn-sm" type="button" onclick="changePass(\'staff\')">OK</button></div>' +
+        '</div>' +
+      '</div>' +
+
+      '<hr>' +
+
+      '<h4>📥 Заявления (<span id="appsCount">0</span>)</h4>' +
+      '<div id="appsList"></div>' +
+      '<div class="admin-actions">' +
+        '<button class="btn btn-red btn-sm" type="button" onclick="clearApps()">Очистить</button>' +
+      '</div>' +
+    '</div>';
+
+  renderDeptList();
+  renderStaffEdit();
+  renderApps();
+}
+
+function renderDeptList(){
+  var host = $('deptListHost'); if (!host) return;
+  var depts = departments.length ? departments : DEFAULT_DEPARTMENTS;
+  host.innerHTML = depts.map(function(d){
+    var cnt = staff.filter(function(s){ return s.department === d.id; }).length;
+    return '<div class="dept-edit-row">' +
+      '<input type="color" class="color-swatch" value="' + esc(d.color||'#d4af37') + '" onchange="updateDepartmentField(\'' + d.id + '\',\'color\',this.value)">' +
+      '<input value="' + esc(d.name) + '" onchange="updateDepartmentField(\'' + d.id + '\',\'name\',this.value)">' +
+      '<span style="color:var(--muted);font-size:12px">' + cnt + ' чел.</span>' +
+      '<button class="btn btn-red btn-sm" type="button" onclick="deleteDepartment(\'' + d.id + '\')">Удалить</button>' +
+    '</div>';
+  }).join('') || '<p class="empty">Отделов нет.</p>';
+}
+
+function renderStaffEdit(){
+  var host = $('staffEditHost'); if (!host) return;
+  var depts = departments.length ? departments : DEFAULT_DEPARTMENTS;
+  if (!staff.length){ host.innerHTML = '<p class="empty">Сотрудников нет.</p>'; return; }
+
+  host.innerHTML = staff.map(function(s){
+    var rankSel = '<select onchange="updateStaffField(\'' + s.id + '\',\'rank\',this.value)"><option value="">— звание —</option>' +
+      RANKS.map(function(r){ return '<option value="' + esc(r) + '"' + (s.rank === r ? ' selected' : '') + '>' + esc(r) + '</option>'; }).join('') +
+      '</select>';
+    var posSel = '<select onchange="updateStaffField(\'' + s.id + '\',\'position\',this.value)"><option value="">— должность —</option>' +
+      POSITIONS.map(function(p){ return '<option value="' + esc(p) + '"' + (s.position === p ? ' selected' : '') + '>' + esc(p) + '</option>'; }).join('') +
+      '</select>';
+    var deptSel = '<select onchange="updateStaffField(\'' + s.id + '\',\'department\',this.value)">' +
+      depts.map(function(d){ return '<option value="' + esc(d.id) + '"' + (s.department === d.id ? ' selected' : '') + '>' + esc(d.name) + '</option>'; }).join('') +
+      '</select>';
+
+    return '<div class="staff-edit-card">' +
+      '<div class="row">' +
+        '<input value="' + esc(s.name) + '" placeholder="ФИО" onchange="updateStaffField(\'' + s.id + '\',\'name\',this.value)">' +
+        rankSel + posSel +
+      '</div>' +
+      '<div class="row2">' +
+        deptSel +
+        '<input value="' + esc(s.discord||'') + '" placeholder="Discord" onchange="updateStaffField(\'' + s.id + '\',\'discord\',this.value)">' +
+        '<input value="' + esc(s.static||'') + '" placeholder="Static ID" onchange="updateStaffField(\'' + s.id + '\',\'static\',this.value)">' +
+        '<select onchange="updateStaffField(\'' + s.id + '\',\'status\',this.value)">' +
+          '<option value="active"' + (s.status !== 'vacation' ? ' selected' : '') + '>На службе</option>' +
+          '<option value="vacation"' + (s.status === 'vacation' ? ' selected' : '') + '>В отпуске</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="actions">' +
+        '<button class="btn btn-warn btn-sm" type="button" onclick="toggleVacation(\'' + s.id + '\')">' +
+          (s.status === 'vacation' ? '🏠 Вернуть' : '🏖 В отпуск') +
+        '</button>' +
+        '<button class="btn btn-red btn-sm" type="button" onclick="deleteStaff(\'' + s.id + '\')">🗑 Удалить</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ============================================================
+   МАТЕРИАЛЫ
+   ============================================================ */
+function renderMaterials(){
+  var grid = $('materialsGrid');
+  var lock = $('materialsLock');
+  var content = $('materialsContent');
+  if (!grid) return;
+
+  updateStats();
+
+  if (!isStaff && !isAdmin){
+    lock.classList.remove('hidden');
+    content.classList.add('hidden');
+    return;
+  }
+  lock.classList.add('hidden');
+  content.classList.remove('hidden');
+  $('adminMaterialForm').classList.toggle('hidden', !isAdmin);
+
+  if (!materials.length){
+    grid.innerHTML = '<p class="empty">Материалов пока нет.</p>';
+    return;
+  }
+
+  grid.innerHTML = materials.map(function(m){
+    var media;
+    if (m.type === 'image') media = '<img class="mat-media" src="' + esc(m.url) + '" alt="" loading="lazy">';
+    else if (m.type === 'video'){
+      var yt = String(m.url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{6,})/);
+      media = yt
+        ? '<iframe class="mat-media" src="https://www.youtube.com/embed/' + yt[1] + '" allowfullscreen></iframe>'
+        : '<video class="mat-media" src="' + esc(m.url) + '" controls preload="metadata"></video>';
+    } else media = '<div class="mat-media" style="display:grid;place-items:center;font-size:38px">🔗</div>';
+    var label = m.type === 'image' ? 'Фото' : m.type === 'video' ? 'Видео' : 'Ссылка';
+
+    return '<div class="mat-card">' + media +
+      '<div class="mat-body">' +
+        '<h4>' + esc(m.title || 'Без названия') + '</h4>' +
+        '<p>' + esc(m.desc || '') + '</p>' +
+        '<div class="mat-meta"><span class="badge">' + label + '</span><span>' + esc(m.date || '') + '</span></div>' +
+        (m.type === 'link' ? '<a href="' + esc(m.url) + '" target="_blank" style="display:inline-block;margin-top:10px;font-size:13px">Открыть →</a>' : '') +
+        (isAdmin ? '<button class="btn btn-red btn-sm" style="margin-top:10px;width:100%" type="button" onclick="removeMaterial(\'' + m.id + '\')">Удалить материал</button>' : '') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.addMaterial = async function(){
+  var title = $('matTitle').value.trim();
+  var desc  = $('matDesc').value.trim();
+  var type  = $('matType').value;
+  var url   = $('matUrl').value.trim();
+  var file  = $('matFile').files[0];
+  if (!title){ toast('Укажите название', 'err'); return; }
+
+  var save = async function(finalUrl, finalType){
+    if (!finalUrl){ toast('Укажите ссылку или файл', 'err'); return; }
+    var obj = { title: title, desc: desc, type: finalType || type, url: finalUrl,
+      date: new Date().toLocaleDateString('ru-RU'), createdAt: Date.now() };
+    try {
+      if (USE_FIREBASE && fb){
+        await fb.addDoc(fb.collection(fb.db, 'materials'), obj);
+      } else {
+        var arr = Store.lsGet('uvd_materials', []);
+        arr.unshift(Object.assign({ id: uid() }, obj));
+        Store.lsSet('uvd_materials', arr);
+        materials = arr;
+        renderMaterials();
+      }
+      $('matTitle').value=''; $('matDesc').value=''; $('matUrl').value=''; $('matFile').value='';
+      toast('Материал добавлен', 'ok');
+    } catch(e){ console.error(e); toast('Ошибка: ' + (e.message||e), 'err'); }
+  };
+
+  if (file){
+    if (file.size > 2.5*1024*1024){ toast('Файл >2.5 МБ', 'err'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e){ save(e.target.result, file.type.indexOf('video') === 0 ? 'video' : 'image'); };
+    reader.readAsDataURL(file);
+  } else save(url);
+};
+
+window.removeMaterial = async function(id){
+  if (!confirm('Удалить материал?')) return;
+  try {
+    if (USE_FIREBASE && fb){
+      await fb.deleteDoc(fb.doc(fb.db, 'materials', id));
+    } else {
+      var arr = Store.lsGet('uvd_materials', []).filter(function(x){ return x.id !== id; });
+      Store.lsSet('uvd_materials', arr);
+      materials = arr;
+      renderMaterials();
+    }
+    toast('Материал удалён', 'ok');
+  } catch(e){ console.error(e); toast('Ошибка: ' + (e.message||e), 'err'); }
+};
+
+/* ============================================================
+   АВТОРИЗАЦИЯ
+   ============================================================ */
+window.openStaffLogin = function(){
+  if (isStaff || isAdmin){ logoutStaff(); return; }
+  openModal('staffModal');
+  setTimeout(function(){ $('staffPass').focus(); }, 100);
+};
+
+window.staffLogin = function(){
+  if ($('staffPass').value === staffPass){
+    isStaff = true;
+    Store.ssSet('uvd_staff', '1');
+    closeModal('staffModal');
+    $('staffPass').value = '';
+    updateAuthUI();
+    renderMaterials();
+    toast('Доступ открыт', 'ok');
+    setTimeout(function(){ document.getElementById('materials').scrollIntoView({behavior:'smooth'}); }, 100);
+  } else toast('Неверный пароль', 'err');
+};
+
+function logoutStaff(){
+  isStaff = false;
+  Store.ssDel('uvd_staff');
+  updateAuthUI();
+  renderMaterials();
+  toast('Выход');
+}
+
+window.adminBtnClick = function(){
+  if (isAdmin){ adminLogout(); return; }
+  openModal('adminModal');
+  setTimeout(function(){ $('adminPass').focus(); }, 100);
+};
+
+window.adminLogin = function(){
+  if ($('adminPass').value === adminPass){
+    isAdmin = true;
+    Store.ssSet('uvd_admin', '1');
+    closeModal('adminModal');
+    $('adminPass').value = '';
+    updateAuthUI();
+    renderStaff(); renderAdminPanel(); renderMaterials();
+    toast('Вы вошли как администратор', 'ok');
+    setTimeout(function(){ document.getElementById('leaders').scrollIntoView({behavior:'smooth'}); }, 100);
+  } else toast('Неверный пароль', 'err');
+};
+
+window.adminLogout = function(){
+  isAdmin = false;
+  Store.ssDel('uvd_admin');
+  updateAuthUI();
+  renderStaff(); renderAdminPanel(); renderMaterials();
+  toast('Выход из админ-панели');
+};
+
+function updateAuthUI(){
+  var btn = $('staffBtn'); if (!btn) return;
+  if (isStaff || isAdmin){ btn.textContent = 'Выйти'; btn.className = 'btn btn-red'; }
+  else { btn.textContent = 'Войти как сотрудник'; btn.className = 'btn btn-ghost'; }
+  var st = $('dbStatus');
+  if (st) st.textContent = USE_FIREBASE ? '🔥 Firebase' : '💾 Local';
+}
+
+/* ============================================================
+   WEBHOOK / ПАРОЛИ / ЗАЯВЛЕНИЯ
+   ============================================================ */
+window.saveWebhook = async function(){
+  var v = $('webhookInput').value.trim();
+  webhookUrl = v;
+  try {
+    if (USE_FIREBASE && fb) await fb.updateDoc(fb.doc(fb.db, 'config', 'main'), { webhookUrl: v });
+    else Store.lsSet('uvd_webhook', v);
+    toast(v ? 'Webhook сохранён' : 'Очищен', 'ok');
+  } catch(e){ console.error(e); toast('Ошибка: ' + (e.message||e), 'err'); }
+};
+
+window.testWebhook = async function(){
+  var url = $('webhookInput').value.trim() || webhookUrl;
+  if (!url){ toast('Укажите webhook', 'err'); return; }
+  try {
+    var r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ content:'✅ Проверка связи — УВД по ЦАО по РФО' }) });
+    if (r.ok || r.status === 204) toast('Проверка отправлена', 'ok');
+    else toast('Ошибка: ' + r.status, 'err');
+  } catch(e){ toast('Не удалось: ' + e.message, 'err'); }
+};
+
+window.changePass = async function(type){
+  if (type === 'admin'){
+    var v = $('newAdminPass').value.trim();
+    if (!v){ toast('Введите пароль', 'err'); return; }
+    adminPass = v;
+    try {
+      if (USE_FIREBASE && fb) await fb.updateDoc(fb.doc(fb.db, 'config', 'main'), { adminPass: v });
+      else Store.lsSet('uvd_adminpass', v);
+      $('newAdminPass').value = '';
+      toast('Пароль админа изменён', 'ok');
+    } catch(e){ toast('Ошибка: ' + (e.message||e), 'err'); }
+  } else {
+    var v2 = $('newStaffPass').value.trim();
+    if (!v2){ toast('Введите пароль', 'err'); return; }
+    staffPass = v2;
+    try {
+      if (USE_FIREBASE && fb) await fb.updateDoc(fb.doc(fb.db, 'config', 'main'), { staffPass: v2 });
+      else Store.lsSet('uvd_staffpass', v2);
+      $('newStaffPass').value = '';
+      toast('Пароль сотрудников изменён', 'ok');
+    } catch(e){ toast('Ошибка: ' + (e.message||e), 'err'); }
+  }
+};
+
+window.clearApps = async function(){
+  if (!confirm('Очистить заявления?')) return;
+  try {
+    if (USE_FIREBASE && fb){
+      var snap = await fb.getDocs(fb.collection(fb.db, 'apps'));
+      var dels = [];
+      snap.forEach(function(d){ dels.push(fb.deleteDoc(fb.doc(fb.db, 'apps', d.id))); });
+      await Promise.all(dels);
+    } else {
+      Store.lsSet('uvd_apps', []);
+      apps = [];
+      renderApps();
+    }
+    toast('Очищено', 'ok');
+  } catch(e){ console.error(e); toast('Ошибка: ' + (e.message||e), 'err'); }
+};
+
+function renderApps(){
+  var list = $('appsList'); if (!list) return;
+  var cnt = $('appsCount'); if (cnt) cnt.textContent = apps.length;
+  if (!apps.length){ list.innerHTML = '<p class="empty">Заявлений нет.</p>'; return; }
+  list.innerHTML = apps.map(function(a){
+    return '<div style="padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--bg2)">' +
+      '<div style="font-weight:600">' + esc(a.fio) + ' <span style="color:var(--muted);font-weight:400">— ' + esc(a.category||'') + '</span></div>' +
+      '<div style="font-size:12px;color:var(--muted)">Discord: ' + esc(a.discord) + ' · Static: ' + esc(a.static) + ' · Место: ' + esc(a.place) + ' · ' + esc(a.dateStr||'') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* ============================================================
+   ОТПРАВКА ЗАЯВЛЕНИЯ
+   ============================================================ */
+function handleApply(e){
+  e.preventDefault();
+  var form = $('applyForm');
+  var btn = $('submitBtn');
+  if (!form.querySelector('input[name="agree"]').checked){ toast('Нужно согласие', 'err'); return; }
+  var fd = new FormData(form); var data = {}; fd.forEach(function(v,k){ data[k]=v; });
+  var req = ['fio','birth','discord','static','date','place','category','about'];
+  for (var i=0;i<req.length;i++) if (!data[req[i]]){ toast('Заполните обязательные поля', 'err'); return; }
+  if (!webhookUrl){ toast('Webhook не настроен', 'err'); return; }
+
+  btn.disabled = true; btn.textContent = 'Отправка...';
+
+  var payload = {
+    username: 'УВД по ЦАО по РФО',
+    embeds: [{
+      title: '🚨 Новое заявление о преступлении',
+      color: 0xd4af37,
+      fields: [
+        { name: '👤 ФИО', value: data.fio || '—', inline: true },
+        { name: '🎂 Дата рождения', value: data.birth || '—', inline: true },
+        { name: '💬 Discord', value: data.discord || '—', inline: true },
+        { name: '🆔 Static', value: data.static || '—', inline: true },
+        { name: '📞 Телефон', value: data.phone || '—', inline: true },
+        { name: '🗓 Дата', value: data.date || '—', inline: true },
+        { name: '📍 Место', value: data.place || '—' },
+        { name: '⚖️ Категория', value: data.category || '—' },
+        { name: '📝 Обстоятельства', value: (data.about||'—').slice(0,1000) },
+        { name: '🕵️ Подозреваемые', value: (data.suspects||'нет').slice(0,500) },
+        { name: '👥 Свидетели', value: (data.witnesses||'нет').slice(0,500) },
+        { name: '🔗 Доказательства', value: (data.evidence||'нет').slice(0,1000) }
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: 'Дежурная часть · УВД по ЦАО по РФО' }
+    }]
+  };
+
+  fetch(webhookUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+    .then(async function(res){
+      if (res.ok || res.status === 204){
+        var rec = Object.assign({}, data);
+        delete rec.agree;
+        rec.dateStr = new Date().toLocaleString('ru-RU');
+        rec.createdAt = Date.now();
+        if (USE_FIREBASE && fb) await fb.addDoc(fb.collection(fb.db, 'apps'), rec);
+        else {
+          var arr = Store.lsGet('uvd_apps', []);
+          arr.unshift(Object.assign({ id: uid() }, rec));
+          Store.lsSet('uvd_apps', arr);
+          apps = arr; renderApps();
+        }
+        toast('Заявление зарегистрировано', 'ok');
+        form.reset();
+      } else toast('Ошибка: ' + res.status, 'err');
+    })
+    .catch(function(err){ toast('Не отправлено: ' + err.message, 'err'); })
+    .then(function(){ btn.disabled = false; btn.textContent = 'Отправить заявление'; });
+}
+
+/* ============================================================
+   ЗАГРУЗКА ДАННЫХ
+   ============================================================ */
+function loadAllLocal(){
+  staff       = Store.lsGet('uvd_staff_list', null) || DEFAULT_STAFF;
+  departments = Store.lsGet('uvd_departments', null) || DEFAULT_DEPARTMENTS;
+  materials   = Store.lsGet('uvd_materials', []);
+  apps        = Store.lsGet('uvd_apps', []);
+  webhookUrl  = Store.lsGet('uvd_webhook', '');
+  adminPass   = Store.lsGet('uvd_adminpass', DEFAULT_ADMIN_PASS);
+  staffPass   = Store.lsGet('uvd_staffpass', DEFAULT_STAFF_PASS);
+
+  if (!Store.lsGet('uvd_staff_list', null))  Store.lsSet('uvd_staff_list', DEFAULT_STAFF);
+  if (!Store.lsGet('uvd_departments', null)) Store.lsSet('uvd_departments', DEFAULT_DEPARTMENTS);
+  if (!Store.lsGet('uvd_materials', null))   Store.lsSet('uvd_materials', []);
+  if (!Store.lsGet('uvd_apps', null))        Store.lsSet('uvd_apps', []);
+
+  renderStaff(); renderAdminPanel(); renderMaterials(); renderApps(); updateStats();
+  console.log('[UVD] localStorage загружен: сотрудников', staff.length);
+}
+
+function loadAllFirebase(){
+  console.log('[UVD] Подписка на Firestore...');
+
+  fb.onSnapshot(fb.collection(fb.db, 'staff'), function(snap){
+    staff = [];
+    snap.forEach(function(d){ staff.push(Object.assign({ id: d.id }, d.data())); });
+    staff.sort(function(a,b){ return (a.order||0) - (b.order||0) || (a.name||'').localeCompare(b.name||''); });
+    renderStaff(); updateStats();
+  }, function(err){ console.error('[UVD] staff snapshot:', err); toast('Ошибка Firestore: ' + err.message, 'err'); });
+
+  fb.onSnapshot(fb.collection(fb.db, 'departments'), function(snap){
+    departments = [];
+    snap.forEach(function(d){ departments.push(Object.assign({ id: d.id }, d.data())); });
+    departments.sort(function(a,b){ return (a.order||0) - (b.order||0); });
+    renderStaff(); renderAdminPanel(); updateStats();
+  }, function(err){ console.error('[UVD] depts snapshot:', err); });
+
+  fb.onSnapshot(fb.collection(fb.db, 'materials'), function(snap){
+    materials = [];
+    snap.forEach(function(d){ materials.push(Object.assign({ id: d.id }, d.data())); });
+    materials.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+    renderMaterials(); updateStats();
+  }, function(err){ console.error('[UVD] materials snapshot:', err); });
+
+  fb.onSnapshot(fb.collection(fb.db, 'apps'), function(snap){
+    apps = [];
+    snap.forEach(function(d){ apps.push(Object.assign({ id: d.id }, d.data())); });
+    apps.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+    renderApps();
+  }, function(err){ console.error('[UVD] apps snapshot:', err); });
+
+  fb.onSnapshot(fb.doc(fb.db, 'config', 'main'), function(d){
+    if (d.exists()){
+      var v = d.data();
+      webhookUrl = v.webhookUrl || '';
+      adminPass  = v.adminPass || DEFAULT_ADMIN_PASS;
+      staffPass  = v.staffPass || DEFAULT_STAFF_PASS;
+    } else {
+      fb.updateDoc(fb.doc(fb.db, 'config', 'main'), {
+        webhookUrl: '', adminPass: DEFAULT_ADMIN_PASS, staffPass: DEFAULT_STAFF_PASS
+      }).catch(function(){});
+    }
+  }, function(err){ console.error('[UVD] config snapshot:', err); });
+}
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ FIREBASE (безопасная)
+   ============================================================ */
+async function initFirebase(){
+  if (!firebaseConfig.projectId){
+    console.log('[UVD] Firebase не настроен, работаем на localStorage');
+    loadAllLocal();
+    return;
+  }
+  USE_FIREBASE = true;
+  try {
+    console.log('[UVD] Загрузка Firebase SDK...');
+    var appMod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+    var fsMod  = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+    var app = appMod.initializeApp(firebaseConfig);
+    var db  = fsMod.getFirestore(app);
+    fb = {
+      db: db,
+      collection: fsMod.collection,
+      doc: fsMod.doc,
+      addDoc: fsMod.addDoc,
+      updateDoc: fsMod.updateDoc,
+      deleteDoc: fsMod.deleteDoc,
+      onSnapshot: fsMod.onSnapshot,
+      getDocs: fsMod.getDocs
+    };
+    console.log('%c[UVD] Firebase подключён ✓', 'color:#3ecf8e;font-weight:bold');
+    updateAuthUI();
+    loadAllFirebase();
+  } catch(e){
+    console.error('[UVD] Firebase init FAILED:', e);
+    USE_FIREBASE = false;
+    fb = null;
+    toast('Firebase не подключён, режим localStorage', 'err');
+    updateAuthUI();
+    loadAllLocal();
+  }
+}
+
+/* ============================================================
+   INIT APP
+   ============================================================ */
+function initApp(){
+  var y = $('year'); if (y) y.textContent = new Date().getFullYear();
+
+  var form = $('applyForm');
+  if (form) form.addEventListener('submit', handleApply);
+
+  document.querySelectorAll('.overlay').forEach(function(ov){
+    ov.addEventListener('click', function(e){ if (e.target === ov) ov.classList.remove('open'); });
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') document.querySelectorAll('.overlay').forEach(function(o){ o.classList.remove('open'); });
+    if (e.key === 'Enter'){
+      if ($('staffModal').classList.contains('open')) staffLogin();
+      else if ($('adminModal').classList.contains('open')) adminLogin();
+    }
+  });
+  document.querySelectorAll('.nav-link').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.querySelectorAll('.nav-link').forEach(function(x){ x.classList.remove('active'); });
+      a.classList.add('active');
+    });
+  });
+
+  updateAuthUI();
+  logStart();
+  initFirebase();
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initApp);
+else initApp();
+</script>
+
+</body>
+</html>
